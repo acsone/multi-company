@@ -31,14 +31,14 @@ class TestProductMultiCompany(common.TransactionCase):
             {'name': 'User company 1',
              'login': 'user_company_1',
              'groups_id': [
-                 (6, 0, self.env.ref('base.group_sale_manager').ids)],
+                 (6, 0, self.env.ref('sales_team.group_sale_manager').ids)],
              'company_id': self.company_1.id,
              'company_ids': [(6, 0, self.company_1.ids)]})
         self.user_company_2 = self.env['res.users'].create(
             {'name': 'User company 2',
              'login': 'user_company_2',
              'groups_id': [
-                 (6, 0, self.env.ref('base.group_sale_manager').ids)],
+                 (6, 0, self.env.ref('sales_team.group_sale_manager').ids)],
              'company_id': self.company_2.id,
              'company_ids': [(6, 0, self.company_2.ids)]})
 
