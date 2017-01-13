@@ -11,6 +11,19 @@ from openerp.exceptions import AccessError
 class TestProductMultiCompany(common.TransactionCase):
     def setUp(self):
         super(TestProductMultiCompany, self).setUp()
+        self.group_user = self.env.ref('base.group_user')
+        self.env.ref('product.access_product_product_employee').write({
+            'perm_write': True,
+            'perm_read': True,
+            'perm_create': True,
+            'perm_unlink': True,
+        })
+        self.env.ref('product.access_product_template_user').write({
+            'perm_write': True,
+            'perm_read': True,
+            'perm_create': True,
+            'perm_unlink': True,
+        })
         self.company_1 = self.env['res.company'].create(
             {'name': 'Test company 1'})
         self.company_2 = self.env['res.company'].create(
@@ -31,14 +44,14 @@ class TestProductMultiCompany(common.TransactionCase):
             {'name': 'User company 1',
              'login': 'user_company_1',
              'groups_id': [
-                 (6, 0, self.env.ref('sales_team.group_sale_manager').ids)],
+                 (6, 0, self.group_user.ids)],
              'company_id': self.company_1.id,
              'company_ids': [(6, 0, self.company_1.ids)]})
         self.user_company_2 = self.env['res.users'].create(
             {'name': 'User company 2',
              'login': 'user_company_2',
              'groups_id': [
-                 (6, 0, self.env.ref('sales_team.group_sale_manager').ids)],
+                 (6, 0, self.group_user.ids)],
              'company_id': self.company_2.id,
              'company_ids': [(6, 0, self.company_2.ids)]})
 
