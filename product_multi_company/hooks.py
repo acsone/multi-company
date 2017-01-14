@@ -23,7 +23,7 @@ def post_init_hook(cr, registry):
         template_model = env['product.template']
         groups = template_model.read_group([], ['company_id'], ['company_id'])
         for group in groups:
-            if not group['company_id']:
+            if not group['company_id']:  # pragma: no cover
                 continue
             templates = template_model.search(group['__domain'])
             templates.write(
