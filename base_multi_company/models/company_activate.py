@@ -6,10 +6,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class CompanyDeactivate(models.Model):
+class CompanyActivate(models.Model):
 
-    _name = 'company.deactivate'
-    _description = 'Company Deactivations'
+    _name = 'company.activate'
+    _description = 'Company Activations'
 
     active = fields.Boolean(
         default=True,

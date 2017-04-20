@@ -5,10 +5,10 @@
 from odoo import api, fields, models
 
 
-class MultiCompanyMixin(models.AbstractModel):
+class MultiCompanyAbstract(models.AbstractModel):
 
-    _name = 'multi.company.mixin'
-    _description = 'Multi-Company Mixin'
+    _name = 'multi.company.abstract'
+    _description = 'Multi-Company Abstract'
 
     active = fields.Boolean(
         compute='_compute_company_active_status',
