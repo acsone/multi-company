@@ -4,9 +4,9 @@
 
 {
     'name': 'Multi Company Base',
-    'summary': 'Provides stage model and abstract logic for inheritance',
+    'summary': 'Provides a base for adding multi-company support to models.',
     'version': '10.0.1.0.0',
-    'author': "LasLabs, Odoo Community Association (OCA)",
+    'author': "LasLabs, Tecnativa, Odoo Community Association (OCA)",
     'category': 'base',
     'depends': [
         'base',
