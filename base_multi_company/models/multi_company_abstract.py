@@ -29,6 +29,7 @@ class MultiCompanyAbstract(models.AbstractModel):
         string='Companies',
         comodel_name='res.company.assignment',
         default=lambda s: s._default_company_ids(),
+        validate=False,
     )
 
     @api.model
@@ -52,21 +53,22 @@ class MultiCompanyAbstract(models.AbstractModel):
             if not record.active:
                 CompanyActivate.get_by_resource(record).deactivate()
             else:
-                activate = CompanyActivate.create_by_resource(record)
+                activate = CompanyActivate.upsert_by_resource(
+                    record,
+                    activate=True,
+                )
                 record.company_active_ids = [(4, activate.id)]
 
     @api.multi
     def _search_company_active_status(self, operator, value):
         company = self.env.user.company_id
-        if (operator == '=' and value) or (operator == '!=' and not value):
-            return [
-                ('company_active_ids.company_id', '=', company.id),
-                ('model_name', '=', self._name),
-                ('resource_int', '=', self.id),
-            ]
+        return [
+            ('company_active_ids.company_id', '=', company.id),
+            ('company_active_ids.active', operator, value),
+        ]
 
     @api.multi
     @api.depends('company_ids')
     def _compute_company_id(self):
         for record in self:
-            record.company_id = record.company_ids[:1]
+            record.company_id = record.company_ids[:1].id

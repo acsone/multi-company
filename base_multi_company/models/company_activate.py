@@ -19,16 +19,6 @@ class CompanyActivate(models.Model):
         selection='_get_resource_types',
         required=True,
     )
-    resource_int = fields.Integer(
-        compute='_compute_resource_int',
-        required=True,
-        store=True,
-    )
-    model_name = fields.Char(
-        compute='_compute_model_name',
-        required=True,
-        store=True,
-    )
     company_id = fields.Many2one(
         string='Company',
         comodel_name='res.company',
@@ -39,7 +29,7 @@ class CompanyActivate(models.Model):
     def _get_resource_types(self):
         """ Return the models implementing the mixin. """
         fields = self.env['ir.model.fields'].search([
-            ('name', '=', 'company_inactive_ids'),
+            ('name', '=', 'company_active_ids'),
         ])
         models = self.env['ir.model'].search([
             ('field_id', 'in', fields.ids),
@@ -69,7 +59,7 @@ class CompanyActivate(models.Model):
             )
             if len(matches) > 1:
                 raise ValidationError(_(
-                    'Cannot have two deactivation records for the same '
+                    'Cannot have two activation records for the same '
                     'resource on the same company.',
                 ))
 
@@ -79,20 +69,27 @@ class CompanyActivate(models.Model):
         return self.write({'active': False})
 
     @api.model
-    def create_by_resource(self, record, company=None):
-        """ Create a new CompanyDeactivate for the record and company. """
+    def upsert_by_resource(self, record, company=None, activate=False):
+        """ Create a new CompanyActivate for the record and company. """
+        if company is None:
+            company = self.env.user.company_id
+        activation = self.get_by_resource(record, company)
+        if activation:
+            if activate:
+                activation.active = True
+            return activation
         return self.create({
-            'resource_ref': record,
+            'resource_ref': '%s,%d' % (record._name, record.id),
             'company_id': company.id,
+            'active': activate,
         })
 
     @api.model
     def get_by_resource(self, record, company=None):
-        """ Return the CompanyDeactivate for the resource and company. """
+        """ Return the CompanyActivate for the resource and company. """
         if company is None:
             company = self.env.user.company_id
         return self.search([
-            ('model_name', '=', record._name),
-            ('resource_int', '=', record.id),
+            ('resource_ref', '=', '%s,%d' % (record._name, record.id)),
             ('company_id', '=', company.id),
         ])
