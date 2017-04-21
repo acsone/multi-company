@@ -73,7 +73,7 @@ class TestMultiCompanyAbstract(common.SavepointCase):
     def switch_user_company(self, user, company):
         """ Add a company to the user's allowed & set to current. """
         user.write({
-            'company_ids': [(4, company.id)],
+            'company_ids': [(6, 0, (company + user.company_ids).ids)],
             'company_id': company.id,
         })
 
@@ -104,8 +104,7 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         record.active = False
         self.assertFalse(record.active,
                          'Record should have been changed to active.')
-        self.switch_user_company(other_user, self.company_1)
-        self.assertTrue(record.active,
+        self.assertTrue(record.sudo().active,
                         'Record was deactivated in other companies.')
 
     def test_active_by_company_admin_user(self):
@@ -114,11 +113,10 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         self.add_company(self.company_2)
         other_user = self.env.ref('base.user_demo')
         self.switch_user_company(other_user, self.company_2)
-        record = self.record.sudo(other_user)
-        self.assertTrue(self.record.active,
+        self.assertTrue(self.record.sudo(other_user).active,
                         'Record should start as active')
         self.record.active = False
         self.assertFalse(self.record.active,
                          'Record should have been changed to active.')
-        self.assertTrue(record.active,
+        self.assertTrue(self.record.sudo(other_user).active,
                         'Record was deactivated in other companies.')

@@ -12,7 +12,6 @@ class MultiCompanyAbstract(models.AbstractModel):
 
     active = fields.Boolean(
         company_dependent=True,
-        company_default=True,
     )
     company_id = fields.Many2one(
         string='Company',
@@ -39,3 +38,22 @@ class MultiCompanyAbstract(models.AbstractModel):
     def _compute_company_id(self):
         for record in self:
             record.company_id = record.company_ids[:1].id
+
+    @api.model_cr
+    def init(self):
+        res = super(MultiCompanyAbstract, self).init()
+        Properties = self.env['ir.property']
+        field = self.env['ir.model.fields'].search([
+            ('model', '=', self._name),
+            ('name', '=', 'active'),
+        ])
+        property = Properties.search([
+            ('fields_id', '=', field.id),
+        ])
+        if not property:
+            Properties.create({
+                'fields_id': field.id,
+                'type': 'binary',
+                'value_binary': True,
+            })
+        return res
