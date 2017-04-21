@@ -12,7 +12,7 @@ class MultiCompanyAbstract(models.AbstractModel):
 
     active = fields.Boolean(
         company_dependent=True,
-        default=True,
+        company_default=True,
     )
     company_id = fields.Many2one(
         string='Company',
