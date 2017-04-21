@@ -2,7 +2,13 @@
 # Copyright 2017 LasLabs Inc.
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
+import logging
+
 from odoo import api, fields, models
+from odoo.tools import ormcache
+
+
+_logger = logging.getLogger(__name__)
 
 
 class MultiCompanyAbstract(models.AbstractModel):
@@ -11,9 +17,13 @@ class MultiCompanyAbstract(models.AbstractModel):
     _description = 'Multi-Company Abstract'
 
     active = fields.Boolean(
-        compute='_compute_company_active_status',
-        inverse='_inverse_company_active_status',
-        search='_search_company_active_status',
+        related='company_active_id.is_active',
+    )
+    company_active_id = fields.Many2one(
+        string='Company Activation',
+        comodel_name='company.activate',
+        compute='_compute_company_active_id',
+        search='_search_company_active_id',
     )
     company_active_ids = fields.Many2many(
         string='Company Activations',
@@ -60,15 +70,23 @@ class MultiCompanyAbstract(models.AbstractModel):
                 record.company_active_ids = [(4, activate.id)]
 
     @api.multi
-    def _search_company_active_status(self, operator, value):
-        company = self.env.user.company_id
-        return [
-            ('company_active_ids.company_id', '=', company.id),
-            ('company_active_ids.active', operator, value),
-        ]
-
-    @api.multi
     @api.depends('company_ids')
     def _compute_company_id(self):
         for record in self:
             record.company_id = record.company_ids[:1].id
+
+    @api.multi
+    @api.depends('company_active_ids')
+    @ormcache('self.env.user.company_id.id', 'id')
+    def _compute_company_active_id(self):
+        for record in self:
+            active = record.company_active_ids.filtered(
+                lambda r: r.company_id == self.env.user.company_id
+            )
+            record.company_active_id = active and active.id or False
+
+    @api.model
+    def _search_company_active_id(self, operator, value):
+        return [
+            ('company_active_ids.company_id', operator, value),
+        ]

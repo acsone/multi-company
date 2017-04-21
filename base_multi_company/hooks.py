@@ -29,14 +29,7 @@ def post_init_hook(cr, rule_ref, model_name):
         })
         # Copy company values
         model = env[model_name]
-        groups = model.read_group(
-            ['|',
-             ('active', '=', 0),
-             ('active', '=', 1),
-             ],
-            ['company_id'],
-            ['company_id'],
-        )
+        groups = model.read_group([], ['company_id'], ['company_id'])
         for group in groups:
             if not group['company_id']:
                 continue

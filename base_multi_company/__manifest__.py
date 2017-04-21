@@ -11,6 +11,9 @@
     'depends': [
         'base',
     ],
+    'data': [
+        'security/ir.model.access.csv',
+    ],
     'website': 'https://laslabs.com',
     'license': 'LGPL-3',
     'installable': True,

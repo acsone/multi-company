@@ -11,7 +11,7 @@ class CompanyActivate(models.Model):
     _name = 'company.activate'
     _description = 'Company Activations'
 
-    active = fields.Boolean(
+    is_active = fields.Boolean(
         default=True,
     )
     resource_ref = fields.Reference(
@@ -64,9 +64,14 @@ class CompanyActivate(models.Model):
                 ))
 
     @api.multi
+    def activate(self):
+        """ Activate the records. """
+        return self.write({'is_active': True})
+
+    @api.multi
     def deactivate(self):
         """ Deactivate the records. """
-        return self.write({'active': False})
+        return self.write({'is_active': False})
 
     @api.model
     def upsert_by_resource(self, record, company=None, activate=False):
@@ -76,12 +81,12 @@ class CompanyActivate(models.Model):
         activation = self.get_by_resource(record, company)
         if activation:
             if activate:
-                activation.active = True
+                activation.activate()
             return activation
         return self.create({
             'resource_ref': '%s,%d' % (record._name, record.id),
             'company_id': company.id,
-            'active': activate,
+            'is_active': activate,
         })
 
     @api.model
