@@ -96,6 +96,7 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         other_user = self.env.ref('base.user_demo')
         self.switch_user_company(other_user, self.company_2)
         record = self.record.sudo(other_user)
+        self.assertTrue(record.active)
         record.active = False
         self.assertFalse(record.active)
         self.switch_user_company(other_user, self.company_1)
@@ -108,6 +109,7 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         other_user = self.env.ref('base.user_demo')
         self.switch_user_company(other_user, self.company_2)
         record = self.record.sudo(other_user)
+        self.assertTrue(self.record.active)
         self.record.active = False
         self.assertFalse(self.record.active)
         self.assertTrue(record.active)
