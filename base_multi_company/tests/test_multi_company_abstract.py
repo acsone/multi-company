@@ -56,7 +56,10 @@ class TestMultiCompanyAbstract(common.SavepointCase):
     def setUp(self):
         super(TestMultiCompanyAbstract, self).setUp()
         self.Model = self.env['multi.company.abstract.tester']
-        self.record = self.Model.create({'name': 'test'})
+        self.record = self.Model.create({
+            'name': 'test',
+            'active': True,
+        })
         Companies = self.env['res.company']
         self.company_1 = Companies._company_default_get()
         self.company_2 = Companies.create({
@@ -96,11 +99,14 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         other_user = self.env.ref('base.user_demo')
         self.switch_user_company(other_user, self.company_2)
         record = self.record.sudo(other_user)
-        self.assertTrue(record.active)
+        self.assertTrue(record.active,
+                        'Record should start as active')
         record.active = False
-        self.assertFalse(record.active)
+        self.assertFalse(record.active,
+                         'Record should have been changed to active.')
         self.switch_user_company(other_user, self.company_1)
-        self.assertTrue(record.active)
+        self.assertTrue(record.active,
+                        'Record was deactivated in other companies.')
 
     def test_active_by_company_admin_user(self):
         """ It should respect company rights during deactivation (non-sudo).
@@ -109,7 +115,10 @@ class TestMultiCompanyAbstract(common.SavepointCase):
         other_user = self.env.ref('base.user_demo')
         self.switch_user_company(other_user, self.company_2)
         record = self.record.sudo(other_user)
-        self.assertTrue(self.record.active)
+        self.assertTrue(self.record.active,
+                        'Record should start as active')
         self.record.active = False
-        self.assertFalse(self.record.active)
-        self.assertTrue(record.active)
+        self.assertFalse(self.record.active,
+                         'Record should have been changed to active.')
+        self.assertTrue(record.active,
+                        'Record was deactivated in other companies.')
