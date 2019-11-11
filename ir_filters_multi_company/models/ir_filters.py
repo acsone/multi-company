@@ -12,7 +12,7 @@ class IrFilters(models.Model):
         'res.company',
         'Company',
         default=lambda self: self.env['res.company']._company_default_get(
-            'calendar.event'
+            'ir.filters'
         ),
         ondelete='cascade',
     )
