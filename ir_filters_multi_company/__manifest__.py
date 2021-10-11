@@ -11,5 +11,4 @@
     "website": "https://github.com/OCA/multi-company",
     "depends": ["base"],
     "data": ["security/ir_filters.xml", "views/ir_filters.xml"],
-    "post_init_hook": "post_init_hook",
 }
