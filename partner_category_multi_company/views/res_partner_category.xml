@@ -2,7 +2,6 @@
 <!-- Copyright 2019 ACSONE SA/NV
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-
     <record model="ir.ui.view" id="view_partner_category_form">
         <field
             name="name"
@@ -17,7 +16,6 @@
         </field>
     </record>
 
-
     <record model="ir.ui.view" id="view_partner_category_list">
         <field
             name="name"
@@ -25,11 +23,10 @@
         <field name="model">res.partner.category</field>
         <field name="inherit_id" ref="base.view_partner_category_list" />
         <field name="arch" type="xml">
-            <tree position="inside">
+            <list position="inside">
                 <field name="company_id" invisible="1" />
                 <field name="company_id" groups="base.group_multi_company" />
-            </tree>
+            </list>
         </field>
     </record>
-
 </odoo>
