@@ -3,7 +3,9 @@
 from odoo import fields, models
 
 
-class ResPartner(models.Model):
+class FakeResPartner(models.Model):
+    _name = "fake.res.partner"
+    _description = "Test res partner"
     _inherit = "res.partner"
 
     phone = fields.Char(company_dependent=True)
